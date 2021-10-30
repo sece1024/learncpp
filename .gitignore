@@ -1,0 +1,5 @@
+## ignore genetated file
+*.exe
+
+##ignore all .o and .a file
+*.[oa]
