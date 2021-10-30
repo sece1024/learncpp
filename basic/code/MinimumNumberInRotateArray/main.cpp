@@ -1,5 +1,5 @@
 #include <iostream>
-#include<stdexcept>
+
 using namespace std;
 int findMinimumNumberInRotateArray(int* numbers, int length)
 {
@@ -15,7 +15,8 @@ int findMinimumNumberInRotateArray(int* numbers, int length)
     int indexMid = index1;
     cout<<"Start search"<<"\n";
     while(index1 < index2){
-        cout<<"index1 = "<<index1<<"\tindexMid = "<<indexMid<<"\tindex2 = "<<index2<<"\n";
+            cout<<"index1 = "<<index1<<"\tindexMid = "<<indexMid<<"\tindex2 = "<<index2<<"\n";
+        cout<<"array[index1] = "<<numbers[index1]<<"\tarray[indexMid] = "<<numbers[indexMid]<<"\tarray[index2] = "<<numbers[index2]<<"\n";
         if(index2 - index1 == 1){
             indexMid = index2;
             break;
@@ -38,7 +39,7 @@ int main()
 {
     int SIZE = 5;
     int numbers[SIZE] = {3,4,5,1,2};
-    cout<<"Origin array: "<<endl;
+    cout<<"Origin array:\t";
     for(int i=0;i<SIZE;i++){
         cout<<numbers[i]<<" ";
     }
