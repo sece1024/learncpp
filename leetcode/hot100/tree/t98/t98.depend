@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1635925331 source:d:\git\my\learncpp\leetcode\hot100\tree\t98\main.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+
