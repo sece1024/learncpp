@@ -236,3 +236,169 @@ bool isValidBST(struct TreeNode* root){
 }
 ```
 
+# 101对称二叉树
+
+[101. 对称二叉树 - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/symmetric-tree/)
+
+给定一个二叉树，检查它是否是镜像对称的。
+
+ 
+
+例如，二叉树 `[1,2,2,3,4,4,3] `是对称的。
+
+    	1
+       / \
+      2   2
+     / \ / \
+    3  4 4  3
+
+
+
+但是下面这个 `[1,2,2,null,3,null,3]` 则不是镜像对称的:
+
+    	1
+       / \
+      2   2
+       \   \
+       3    3
+
+## 递归
+
+- The Tree is symmetry when root is NULL
+- Otherwise it's `leftchild.val == rightchild.val` and left child tree are symmetric with right child tree
+- And root's left child tree's left child symmetric with root's right child tree's right child, root's left child tree's right child symmetric with root's right child tree's left child.
+
+### Python
+
+执行用时: **32 ms**
+
+内存消耗: **15 MB**
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def isSymmetric(self, root: TreeNode) -> bool:
+        if root == None:
+            return True
+        return self.symmetric(root.left, root.right)
+        
+    
+    def symmetric(self, t1: TreeNode, t2: TreeNode)->bool:
+        if t1 == None and t2 == None:
+            return True
+        if t1 == None or t2 == None:
+            return False
+        if t1.val != t2.val:
+            return False
+        return self.symmetric(t1.left, t2.right) and self.symmetric(t1.right, t2.left)
+```
+
+### C
+
+执行用时：**0 ms**
+
+内存消耗：**6.6 MB**
+
+```c
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def isSymmetric(self, root: TreeNode) -> bool:
+        if root == None:
+            return True
+        return self.symmetric(root.left, root.right)
+        
+    
+    def symmetric(self, t1: TreeNode, t2: TreeNode)->bool:
+        if t1 == None and t2 == None:
+            return True
+        if t1 == None or t2 == None:
+            return False
+        if t1.val != t2.val:
+            return False
+        return self.symmetric(t1.left, t2.right) and self.symmetric(t1.right, t2.left)
+```
+
+# 102二叉树的层序遍历
+
+[102. 二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
+
+给你一个二叉树，请你返回其按 层序遍历 得到的节点值。 （即逐层地，从左到右访问所有节点）。
+
+示例：
+二叉树：[3,9,20,null,null,15,7],
+
+    	3
+       / \
+      9  20
+        /  \
+       15   7
+
+返回其层序遍历结果：
+
+```
+[
+  [3],
+  [9,20],
+  [15,7]
+]
+```
+
+## 迭代
+
+### 使用队列
+
+Queue q1 save nodes had been visited.
+
+Queue q2 save childs of nodes in q1's node.
+
+#### Python
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def levelOrder(self, root: TreeNode) -> List[List[int]]:
+        if root is None:
+            return []
+        q = [root]
+        q2 = []
+        temp = []
+        result = [[root.val]]
+        while q:
+            item = q.pop(0)
+            if item.left:
+                q2.append(item.left)
+                temp += [item.left.val]
+            if item.right:
+                q2.append(item.right)
+                temp += [item.right.val]
+            if not q:
+                q = q2
+                q2 = []
+                if temp:
+                    result.append(temp)
+                    temp = []
+        return result
+
+```
+
+C
+
+```c
+
+```
+
