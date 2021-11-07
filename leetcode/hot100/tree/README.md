@@ -402,3 +402,210 @@ C
 
 ```
 
+# 104.二叉树的最大深度
+
+给定一个二叉树，找出其最大深度。
+
+二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+
+说明: 叶子节点是指没有子节点的节点。
+
+示例：
+给定二叉树 [3,9,20,null,null,15,7]，
+
+    	3
+       / \
+      9  20
+        /  \
+       15   7
+
+返回它的最大深度 3 。
+
+## 错误解法
+
+由于之前学了利用栈遍历二叉树，所以首先想到了使用遍历的方法：
+
+`stack` 保存节点
+
+`deep` 保存当前深度
+
+`m = deep if deep>m else m` 保存最大深度
+
+-  在将左子树入栈的时候，该方法似乎没有问题
+
+  但是在遍历右子树，将栈顶元素出栈，`deep -= 1`后就不行了。
+
+- 比如，对于只有右子树的一个单链表结构的树，`deep`始终在0和1之间循环。
+
+## 正确解法
+
+### 递归
+
+**递归出口：**
+
+单个节点深度为1，空节点深度为0
+
+**所以**
+
+最大深度 `deep = max(maxDeepth(root.left), maxDeepth(root.right)) + 1`
+
+### BFS广度优先搜索
+
+使用列表保存每一层节点，每遍历一层就将深度`deep`加一。
+
+###  **代码**
+
+#### 递归
+
+##### **Python**
+
+执行用时: **52 ms**
+
+内存消耗: **16.6 MB**
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def maxDepth(self, root: TreeNode) -> int:
+        if root is None:
+            return 0
+        if  not (root.left or root.right):
+            return 1
+        
+        return max(self.maxDepth(root.left), self.maxDepth(root.right)) + 1
+```
+
+##### C
+
+执行用时: **4 ms**
+
+内存消耗: **8 MB**
+
+```c
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+int max(int a, int b){
+    return a>b? a : b;
+}
+int maxDepth(struct TreeNode* root){
+    if(root == NULL){
+        return 0;
+    }
+    if(root->left == NULL && root->right == NULL){
+        return 1;
+    }
+    return max(maxDepth(root->left), maxDepth(root->right)) + 1;
+}
+```
+
+#### BFS
+
+##### Python
+
+执行用时: **36 ms**
+
+内存消耗: **16 MB**
+
+```python
+class Solution:
+    def maxDepth(self, root: TreeNode) -> int:
+        if root is None:
+            return 0
+        if  not (root.left or root.right):
+            return 1
+        stack = [root]
+        deep = 0
+        while stack:
+            deep += 1
+            tempStack = []
+            for i in range(len(stack)):
+                if stack[i].left:
+                    tempStack.append(stack[i].left)
+                if stack[i].right:
+                    tempStack.append(stack[i].right)
+            stack = tempStack
+
+        return deep
+```
+
+#### 
+
+# 105从前序与中序遍历序列构造二叉树
+
+[105 ](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
+
+给定一棵树的前序遍历 preorder 与中序遍历  inorder。请构造二叉树并返回其根节点。
+
+ ![](https://assets.leetcode.com/uploads/2021/02/19/tree.jpg)
+
+示例 1:
+
+```
+Input: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+Output: [3,9,20,null,null,15,7]
+```
+
+## 递归
+
+- 从preorder获取根节点root
+- 从inorder获取root边的序列left和right
+- 使用新的序列递归生成root的左右子树
+
+### Python
+
+执行用时：332 ms, 在所有 Python3 提交中击败了5.15%的用户
+
+内存消耗：87.3 MB, 在所有 Python3 提交中击败了13.29%的用户
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
+        root = TreeNode()
+        if not preorder:
+            return None
+
+        if len(preorder) == 1:
+            root.val = preorder[0]
+            return root
+        
+        root.val = preorder[0]
+        left = []
+        right = []
+        index = 0
+        for i in range(len(inorder)):
+            if inorder[i] == root.val:
+                index = i
+                left = inorder[:i]
+                right = inorder[i+1:] if i != len(inorder) - 1 else []
+                break
+        root.left = self.buildTree(preorder[1:1+len(left)], left)
+        root.right = self.buildTree(preorder[1+len(left):] , right)
+
+        return root;
+
+
+```
+
+
+
+
+
+
