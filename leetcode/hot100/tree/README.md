@@ -606,6 +606,150 @@ class Solution:
 
 
 
+# 114二叉树展开为链表
+
+[114. ](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
+
+给你二叉树的根结点 root ，请你将它展开为一个单链表：
+
+展开后的单链表应该同样使用 TreeNode ，其中 right 子指针指向链表中下一个结点，而左子指针始终为 null 。
+展开后的单链表应该与二叉树 先序遍历 顺序相同。
 
 
+示例 1：
+
+```
+输入：root = [1,2,5,3,4,null,6]
+输出：[1,null,2,null,3,null,4,null,5,null,6]
+```
+
+示例 2：
+
+```
+输入：root = []
+输出：[]
+```
+
+示例 3：
+
+```
+输入：root = [0]
+输出：[0]
+```
+
+
+提示：
+
+树中结点数在范围 [0, 2000] 内
+-100 <= Node.val <= 100
+
+
+进阶：你可以使用原地算法（O(1) 额外空间）展开这棵树吗？
+
+## 普通的先序遍历
+
+先序遍历一遍，将所有节点保存在列表中，在遍历一便列表将root变成线性结构。
+
+### Python
+
+执行用时：20 ms, 在所有 Python3 提交中击败了99.88%的用户
+
+内存消耗：14.7 MB, 在所有 Python3 提交中击败了99.03%的用户
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def flatten(self, root: TreeNode) -> None:
+        """
+        Do not return anything, modify root in-place instead.
+        """
+        if not root:
+            return
+        if root.left is None and root.right is None:
+            return
+        else:
+            p = root
+            stack = []
+            stack2 = []
+            while stack or p:
+                if p:
+                    stack.append(p)
+                    stack2.append(p)
+                    p = p.left
+                else:
+                    p = stack.pop()
+                    p = p.right
+            p = stack2[0]
+            for item in stack2:
+                if item == root:
+                    p.left = None
+                else:
+                    p.left = None
+                    p.right = item
+                    p = p.right
+                
+                    
+```
+
+# 226翻转二叉树
+
+#### [226](https://leetcode-cn.com/problems/invert-binary-tree/)
+
+翻转一棵二叉树。
+
+示例：
+
+输入：
+
+          4
+        /   \
+      2     7
+     / \   / \
+    1   3 6   9
+
+输出：
+
+          4
+        /   \
+      7     2
+     / \   / \
+    9   6 3   1
+
+备注:
+这个问题是受到 Max Howell 的 原问题 启发的 ：
+
+>  谷歌：我们90％的工程师使用您编写的软件(Homebrew)，但是您却无法在面试时在白板上写出翻转二叉树这道题，这太糟糕了。
+
+
+
+## 普通递归
+
+### python
+
+执行用时：36 ms, 在所有 Python3 提交中击败了34.53%的用户
+
+内存消耗：14.8 MB, 在所有 Python3 提交中击败了93.84%的用户
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        if root is None or (root.left is None and root.right is None):
+            return root
+        temp = self.invertTree(root.right) 
+        root.right = self.invertTree(root.left)
+        root.left = temp
+        return root
+
+```
 
