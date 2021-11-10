@@ -698,7 +698,7 @@ class Solution:
 
 # 226翻转二叉树
 
-#### [226](https://leetcode-cn.com/problems/invert-binary-tree/)
+[226](https://leetcode-cn.com/problems/invert-binary-tree/)
 
 翻转一棵二叉树。
 
@@ -751,5 +751,295 @@ class Solution:
         root.left = temp
         return root
 
+```
+
+# 236二叉树的最近公共祖先
+
+[236. ](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+>  [百度百科](https://baike.baidu.com/item/最近公共祖先/8918834?fr=aladdin)中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（**一个节点也可以是它自己的祖先**）。”
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)
+
+```
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+输出：3
+解释：节点 5 和节点 1 的最近公共祖先是节点 3 。
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2018/12/14/binarytree.png)
+
+```
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+输出：5
+解释：节点 5 和节点 4 的最近公共祖先是节点 5 。因为根据定义最近公共祖先节点可以为节点本身。
+```
+
+**示例 3：**
+
+```
+输入：root = [1,2], p = 1, q = 2
+输出：1
+```
+
+ 
+
+**提示：**
+
+- 树中节点数目在范围 `[2, 105]` 内。
+- `-109 <= Node.val <= 109`
+- 所有 `Node.val` `互不相同` 。
+- `p != q`
+- `p` 和 `q` 均存在于给定的二叉树中。
+
+## DFS递归
+
+遍历整棵树，返回子树中是否存在目标节点p、q。
+
+当左右子树同时返回true，或者t为p或q且有一个子树是p或q，则表示当前节点就是最近公共祖先。
+
+
+
+### Python
+
+执行用时：44 ms, 在所有 Python3 提交中击败了99.86%的用户
+
+内存消耗：28.1 MB, 在所有 Python3 提交中击败了12.82%的用户
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        self.ancestor = root
+        # 判断孩子中是否有p或q
+        def dfs(r: 'TreeNode', p: 'TreeNode', q: 'TreeNode')->bool:
+            lChild = False
+            rChild = False
+            if r is None:
+                return False
+            if r.left:
+                lChild = dfs(r.left, p, q)
+            if r.right:
+                rChild = dfs(r.right, p, q)
+            if (lChild and rChild) or ((r == p or r == q) and (lChild or rChild)):
+                self.ancestor = r
+            return r == p or r == q or lChild or rChild
+        dfs(root, p, q)
+        return self.ancestor
+```
+
+### C
+
+```c
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+struct TreeNode* lowestCommonAncestor(struct TreeNode* root, struct TreeNode* p, struct TreeNode* q) {
+    struct TreeNode *ancestor = root;
+    bool dfs(struct TreeNode* root, struct TreeNode* p, struct TreeNode* q){
+        bool lChild = false;
+        bool rChild = false;
+        if(root == NULL)    return false;
+        if(root->left)  lChild = dfs(root->left, p, q);
+        if(root->right) rChild = dfs(root->right, p, q);
+        if(lChild&&rChild || (root == p || root == q ) && (lChild || rChild))   ancestor = root;
+        return root == p || root == q || lChild || rChild;
+    }
+    dfs(root, p, q);
+    return ancestor;
+}
+```
+
+# 297二叉树的序列化与反序列化
+
+[297. ](https://leetcode-cn.com/problems/serialize-and-deserialize-binary-tree/)
+
+难度困难676
+
+序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+
+请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，你只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+
+**提示:** 输入输出格式与 LeetCode 目前使用的方式一致，详情请参阅 [LeetCode 序列化二叉树的格式](https://leetcode-cn.com/faq/#binary-tree)。你并非必须采取这种方式，你也可以采用其他的方法解决这个问题。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/09/15/serdeser.jpg)
+
+```
+输入：root = [1,2,3,null,null,4,5]
+输出：[1,2,3,null,null,4,5]
+```
+
+**示例 2：**
+
+```
+输入：root = []
+输出：[]
+```
+
+**示例 3：**
+
+```
+输入：root = [1]
+输出：[1]
+```
+
+**示例 4：**
+
+```
+输入：root = [1,2]
+输出：[1,2]
+```
+
+ 
+
+**提示：**
+
+- 树中结点数在范围 `[0, 104]` 内
+- `-1000 <= Node.val <= 1000`
+
+## 层序遍历
+
+看了别人的代码才意识到之前用两个栈进行层序遍历比较蠢。
+
+关键点：序列化出来的不一定是完全二叉树，反序列画的时候不能简单的`i*2 + 1`或者 `i*2+2`,而是用`index += 2`的方式来获取数组中的值。
+
+### Python
+
+```python
+# Definition for a binary tree node.
+# class TreeNode(object):
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Codec:
+
+    def serialize(self, root):
+        """Encodes a tree to a single string.
+        
+        :type root: TreeNode
+        :rtype: str
+        """
+        if root is None:    return ''
+        if not (root.left or root.right):  return str(root.val)
+
+        self.result = ''
+        def bfs(root):
+            p = root
+            stack1 = [root]
+            while stack1:
+                tempStack = stack1
+                stack1 = []
+                while tempStack:
+
+                    p = tempStack.pop(0)
+                    if not p:
+                        self.result += '-1999'
+                        self.result += '#'
+                    else:
+                        self.result += str(p.val)
+                        self.result += '#'
+                        stack1.append(p.left if p.left else False) 
+                        stack1.append(p.right if p.right else False)
+                    # print(self.result)
+                
+        bfs(root)
+        return self.result
+
+        
+
+    def deserialize(self, data):
+        """Decodes your encoded data to tree.
+        
+        :type data: str
+        :rtype: TreeNode
+        """
+        data.strip()
+        if data == '':  return None
+        li = data.split('#')
+        inp = []
+        for i in li:
+            if i.strip() != '':
+                inp.append(int(i))
+        self.root = TreeNode(inp[0])
+
+        if len(inp) == 1:
+            return self.root
+        
+
+        def buildTree(arr:[int]):
+            length = len(arr)
+            # print(arr,end='\n')
+            index = 0
+            self.root = TreeNode(arr[0])
+            queue = [self.root]
+            index = 1
+            while queue:
+                p = queue.pop(0)
+                if p:
+                    p.left = TreeNode(int(arr[index])) if arr[index]>= -1000 and arr[index] <= 1000 else None
+                    p.right = TreeNode(int(arr[index + 1])) if arr[index+1]>= -1000 and arr[index+1] <= 1000 else None
+                    queue.append(p.left)
+                    queue.append(p.right)
+                    index += 2
+            # nodeList = []
+
+            # for i in range(length):
+            #     if arr[i] < -1000 or arr[i] > 1000:
+            #         nodeList.append(None)
+            #     else:
+            #         nodeList.append(TreeNode(arr[i]))
+                
+            # for j in range(length):
+            #     if nodeList[j]:
+            #         if j*2+1 < length:
+            #             nodeList[j].left = nodeList[j*2 + 1]
+            #         else:
+            #             nodeList[j].left = None
+            #         if j*2 + 2 < length:
+            #             nodeList[j].right = nodeList[j*2 + 2]
+            #         else:
+            #             nodeList[j].right = None
+                    
+            #         # print(nodeList[j])
+            # self.root = nodeList[0]
+        buildTree(inp)
+        return self.root
+
+                
+
+        
+
+        
+
+# Your Codec object will be instantiated and called as such:
+# ser = Codec()
+# deser = Codec()
+# ans = deser.deserialize(ser.serialize(root))
 ```
 
