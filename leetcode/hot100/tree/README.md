@@ -1043,3 +1043,436 @@ class Codec:
 # ans = deser.deserialize(ser.serialize(root))
 ```
 
+# 337打家劫舍 III
+
+[337. ](https://leetcode-cn.com/problems/house-robber-iii/)
+
+难度中等1033
+
+在上次打劫完一条街道之后和一圈房屋后，小偷又发现了一个新的可行窃的地区。这个地区只有一个入口，我们称之为“根”。 除了“根”之外，每栋房子有且只有一个“父“房子与之相连。一番侦察之后，聪明的小偷意识到“这个地方的所有房屋的排列类似于一棵二叉树”。 如果两个直接相连的房子在同一天晚上被打劫，房屋将自动报警。
+
+计算在不触动警报的情况下，小偷一晚能够盗取的最高金额。
+
+**示例 1:**
+
+```
+输入: [3,2,3,null,3,null,1]
+
+     3
+    / \
+   2   3
+    \   \ 
+     3   1
+
+输出: 7 
+解释: 小偷一晚能够盗取的最高金额 = 3 + 3 + 1 = 7.
+```
+
+**示例 2:**
+
+```
+输入: [3,4,5,1,3,null,1]
+
+     3
+    / \
+   4   5
+  / \   \ 
+ 1   3   1
+
+输出: 9
+解释: 小偷一晚能够盗取的最高金额 = 4 + 5 = 9.
+```
+
+## 错误解法
+
+层序遍历，分别求奇数层和偶数层的节点和。
+
+错误代码
+
+**64 / 124** 个通过测试用例
+
+```python
+class Solution:
+    def rob(self, root: TreeNode) -> int:
+        if not root:
+            return 0
+        if root.left == None and root.right == None:
+            return root.val
+        # 不偷当前节点,最大值
+        self.f = {}
+        # 偷当前节点，最大值
+        self.g = {}
+        def dfs(root: TreeNode):
+            if not root:
+                return None
+            dfs(root.left)
+            dfs(root.right)
+            lFChild = self.f[root.left] if self.f.get(root.left) else 0
+            rFChild = self.f[root.right] if self.f.get(root.right) else 0
+            lGChild = self.g[root.left] if self.g.get(root.left) else 0
+            rGChild = self.g[root.right] if self.g.get(root.right) else 0
+            
+            self.f[root] = max(lFChild+rFChild, lGChild+rGChild)
+            self.g[root] = root.val + lFChild + rFChild
+        dfs(root)
+        return max(self.f[root], self.g[root])
+```
+
+
+
+## DFS
+
+自底向上使用字典保存每一个节点偷或不偷的最大价值。
+
+**注意，需要考虑两个子树一个偷一个不偷的情况**
+
+### Python
+
+执行用时：48 ms, 在所有 Python3 提交中击败了59.27%的用户
+
+内存消耗：18 MB, 在所有 Python3 提交中击败了9.54%的用户
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def rob(self, root: TreeNode) -> int:
+        if not root:
+            return 0
+        if root.left == None and root.right == None:
+            return root.val
+        # 不偷当前节点,最大值
+        self.f = {}
+        # 偷当前节点，最大值
+        self.g = {}
+        def dfs(root: TreeNode):
+            if not root:
+                return None
+            dfs(root.left)
+            dfs(root.right)
+            lFChild = self.f[root.left] if self.f.get(root.left) else 0
+            rFChild = self.f[root.right] if self.f.get(root.right) else 0
+
+            lGChild = self.g[root.left] if self.g.get(root.left) else 0
+            rGChild = self.g[root.right] if self.g.get(root.right) else 0
+            # 需要考虑左子树和右子树一个偷一个不偷的情况
+            self.f[root] = max(max(lFChild+rFChild, lGChild+rGChild), max(lFChild+rGChild, lGChild+rFChild))
+            # print(root,end='\t')
+            # print(self.f[root])
+            self.g[root] = root.val + lFChild + rFChild
+        dfs(root)
+        return max(self.f[root], self.g[root])
+```
+
+# 543二叉树的直径
+
+## DFS
+
+自底向上保存当前节点为端点、当前节点不为端点时的直径字典，同时更新最大直径。
+
+### Python
+
+执行用时：52 ms, 在所有 Python3 提交中击败了16.80%的用户
+
+内存消耗：17.4 MB, 在所有 Python3 提交中击败了5.21%的用户
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def diameterOfBinaryTree(self, root: TreeNode) -> int:
+        if not root:
+            return 0
+        if root.left is None and root.right is None:
+            return 0
+        # 当前节点为端点
+        self.isEnd = {}
+        # 当前节点不是端点
+        self.notEnd = {}
+        self.Max = -999
+        def dfs(root:TreeNode):
+            if not root:
+                self.isEnd[root] = 0
+                self.notEnd[root] = 0
+                return
+            dfs(root.left)
+            dfs(root.right)
+            lChildIsEnd= self.isEnd[root.left] 
+            rChildIsEnd = self.isEnd[root.right] 
+
+            # lChildNot = notEnd[root.left] if notEnd.get(root.left) else 0
+            # rChildNot = notEnd[root.right] if notEnd.get(root.right) else 0
+
+            if root.left or root.right:
+                self.isEnd[root] = 1
+            else:
+                self.isEnd[root] = 0
+
+            self.isEnd[root] += max(lChildIsEnd, rChildIsEnd)
+            self.notEnd[root] = 0
+            if root.left:
+                self.notEnd[root] += 1
+            if root.right:
+                self.notEnd[root] += 1
+            self.notEnd[root] += lChildIsEnd + rChildIsEnd
+
+            self.Max = max(self.isEnd[root], self.notEnd[root]) if max(self.isEnd[root], self.notEnd[root]) > self.Max else self.Max
+
+        dfs(root)
+        return self.Max
+
+            
+```
+
+
+
+# 437路径总和 III
+
+[437. ](https://leetcode-cn.com/problems/path-sum-iii/)
+
+难度中等1140
+
+给定一个二叉树的根节点 `root` ，和一个整数 `targetSum` ，求该二叉树里节点值之和等于 `targetSum` 的 **路径** 的数目。
+
+**路径** 不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2021/04/09/pathsum3-1-tree.jpg)
+
+```
+输入：root = [10,5,-3,3,2,null,11,3,-2,null,1], targetSum = 8
+输出：3
+解释：和等于 8 的路径有 3 条，如图所示。
+```
+
+**示例 2：**
+
+```
+输入：root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22
+输出：3
+```
+
+ 
+
+**提示:**
+
+- 二叉树的节点个数的范围是 `[0,1000]`
+- `-109 <= Node.val <= 109` 
+- `-1000 <= targetSum <= 1000` 
+
+## 双递归
+
+看了别人的解法，比较考验逻辑。
+
+- `calculateSum(TreeNode, int)`
+  - 计算以输入节点为起点的路径是否满足要求，是则`count += 1`
+  - 对子结点调用`calculateSum`，将返回值与`count`相加
+- `pathSum(TreeNode, int)`
+  - 计算以当输入节点为根节点的树，是否有和为target的路径
+
+### Python
+
+执行用时：588 ms, 在所有 Python3 提交中击败了37.43%的用户
+
+内存消耗：16.3 MB, 在所有 Python3 提交中击败了50.25%的用户
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def pathSum(self, root: TreeNode, targetSum: int) -> int:
+        if not root:
+            return 0
+
+        def calculateSum(r: TreeNode, tar: int)->int:
+            if not r:
+                return 0
+            count = 0
+            tar -= r.val
+            if tar == 0:
+                count += 1
+            return count + calculateSum(r.left, tar) + calculateSum(r.right, tar)
+
+        return calculateSum(root, targetSum) + self.pathSum(root.left, targetSum) + self.pathSum(root.right, targetSum)
+
+```
+
+### C
+
+执行用时：28 ms, 在所有 C 提交中击败了37.00%的用户
+
+内存消耗：8.2 MB, 在所有 C 提交中击败了26.98%的用户
+
+```c
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+int calculateSum(struct TreeNode* root, int target){
+    if(root == NULL)    return 0;
+    int count = 0;
+    target -= root->val;
+    if(!target) count = 1;
+
+    return count + calculateSum(root->left, target) + calculateSum(root->right, target);
+}
+int pathSum(struct TreeNode* root, int targetSum){
+    if(root == NULL)    return 0;
+
+    return calculateSum(root, targetSum) + pathSum(root->left, targetSum) + pathSum(root->right, targetSum);
+}
+```
+
+# 538把二叉搜索树转换为累加树
+
+[538. ](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
+
+难度中等608
+
+给出二叉 **搜索** 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 `node` 的新值等于原树中大于或等于 `node.val` 的值之和。
+
+提醒一下，二叉搜索树满足下列约束条件：
+
+- 节点的左子树仅包含键 **小于** 节点键的节点。
+- 节点的右子树仅包含键 **大于** 节点键的节点。
+- 左右子树也必须是二叉搜索树。
+
+**注意：**本题和 1038: https://leetcode-cn.com/problems/binary-search-tree-to-greater-sum-tree/ 相同
+
+ 
+
+**示例 1：**
+
+**![img](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2019/05/03/tree.png)**
+
+```
+输入：[4,1,6,0,2,5,7,null,null,null,3,null,null,null,8]
+输出：[30,36,21,36,35,26,15,null,null,null,33,null,null,null,8]
+```
+
+**示例 2：**
+
+```
+输入：root = [0,null,1]
+输出：[1,null,1]
+```
+
+**示例 3：**
+
+```
+输入：root = [1,0,2]
+输出：[3,3,2]
+```
+
+**示例 4：**
+
+```
+输入：root = [3,2,4,1]
+输出：[7,9,4,10]
+```
+
+ 
+
+**提示：**
+
+- 树中的节点数介于 `0` 和 `104` 之间。
+- 每个节点的值介于 `-104` 和 `104` 之间。
+- 树中的所有值 **互不相同** 。
+- 给定的树为二叉搜索树。
+
+## 右子树DFS
+
+使用一个变量保存当前节点和即可。
+
+### Python
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def convertBST(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        if not root:
+            return None
+        # 大于等于该节点的节点和
+        self.nowMax = 0
+        def test(r:Optional[TreeNode]):
+            if not r:
+                return
+            test(r.right)
+            r.val += self.nowMax
+            self.nowMax = r.val
+            test(r.left)
+
+        # 向右深度优先遍历
+        # def dfsRight(r:Optional[TreeNode])->int:
+        #     if not r:
+        #         return 0
+        #     maxValueInRight = dfsRight(r.right)
+        #     r.val += maxValueInRight
+        #     maxValueInLeft = max(dfsRight(r.left), r.val)
+        #     if r.left:
+        #         r.left.val += r.val
+
+        #     return maxValueInLeft + maxValueInRight 
+
+        test(root)
+        return root
+            
+```
+
+### C
+
+执行用时：20 ms, 在所有 C 提交中击败了76.89%的用户
+
+内存消耗：13.6 MB, 在所有 C 提交中击败了36.13%的用户
+
+```c
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int* NowMax = NULL;
+void dfsRF(struct TreeNode* root){
+    if(root==NULL)  return NULL;
+    dfsRF(root->right);
+    root->val += *NowMax;
+    *NowMax = root->val;
+    dfsRF(root->left);
+}
+struct TreeNode* convertBST(struct TreeNode* root){
+    if(root == NULL)    return NULL;
+    int zero = 0;
+    NowMax = &zero;
+    dfsRF(root);
+    return root;
+}
+```
+
