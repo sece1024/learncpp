@@ -1476,3 +1476,191 @@ struct TreeNode* convertBST(struct TreeNode* root){
 }
 ```
 
+# 617合并二叉树
+
+[617. ](https://leetcode-cn.com/problems/merge-two-binary-trees/)
+
+难度简单807
+
+给定两个二叉树，想象当你将它们中的一个覆盖到另一个上时，两个二叉树的一些节点便会重叠。
+
+你需要将他们合并为一个新的二叉树。合并的规则是如果两个节点重叠，那么将他们的值相加作为节点合并后的新值，否则**不为** NULL 的节点将直接作为新二叉树的节点。
+
+**示例 1:**
+
+```
+输入: 
+	Tree 1                     Tree 2                  
+          1                         2                             
+         / \                       / \                            
+        3   2                     1   3                        
+       /                           \   \                      
+      5                             4   7                  
+输出: 
+合并后的树:
+	     3
+	    / \
+	   4   5
+	  / \   \ 
+	 5   4   7
+```
+
+**注意:** 合并必须从两个树的根节点开始。
+
+
+
+## 层序遍历
+
+重点是保证层序遍历时每一层节点数相同，对于左树中没有，右树中有，或者左树中有，右数中没有的情况，用值为0的节点填充。
+
+### Python
+
+执行用时：88 ms, 在所有 Python3 提交中击败了6.18%的用户
+
+内存消耗：15.5 MB, 在所有 Python3 提交中击败了23.24%的用户
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
+        if not(root1 or root2):
+            return None
+        if not root1 and root2:
+            temp = root1
+            root1 = root2
+            root2 = temp
+        
+        queue1 = [root1]
+        queue2 = [root2]
+
+        while queue1 or queue2:
+            p1 = queue1.pop(0)
+            p2 = queue2.pop(0)
+
+            if p1 and p2:
+                p1.val += p2.val
+            if p1:
+                if not p1.left and (p2 and p2.left):
+                    p1.left = TreeNode(0)
+                if not p1.right and (p2 and p2.right):
+                    p1.right = TreeNode(0)
+            if p2:
+                if not p2.left and (p1 and p1.left):
+                    p2.left = TreeNode(0)
+                if not p2.right and (p1 and p1.right):
+                    p2.right = TreeNode(0)
+            if p1 and p2:
+                queue1.append(p1.left)
+                queue1.append(p1.right)
+                queue2.append(p2.left)
+                queue2.append(p2.right)
+        return root1
+
+
+
+
+        
+```
+
+# 124二叉树中的最大路径和
+
+[124.](https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/)
+
+难度困难1286
+
+**路径** 被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。同一个节点在一条路径序列中 **至多出现一次** 。该路径 **至少包含一个** 节点，且不一定经过根节点。
+
+**路径和** 是路径中各节点值的总和。
+
+给你一个二叉树的根节点 `root` ，返回其 **最大路径和** 。
+
+ 
+
+**示例 1：**
+
+![img](https://assets.leetcode.com/uploads/2020/10/13/exx1.jpg)
+
+```
+输入：root = [1,2,3]
+输出：6
+解释：最优路径是 2 -> 1 -> 3 ，路径和为 2 + 1 + 3 = 6
+```
+
+**示例 2：**
+
+![img](https://assets.leetcode.com/uploads/2020/10/13/exx2.jpg)
+
+```
+输入：root = [-10,9,20,null,null,15,7]
+输出：42
+解释：最优路径是 15 -> 20 -> 7 ，路径和为 15 + 20 + 7 = 42
+```
+
+ 
+
+**提示：**
+
+- 树中节点数目范围是 `[1, 3 * 104]`
+- `-1000 <= Node.val <= 1000`
+
+## 递归
+
+维护一个静态变量保存最大路径，自底向上计算已当节点为端点或者中间节点的最大值
+
+### Python
+
+执行用时：72 ms, 在所有 Python3 提交中击败了84.11%的用户
+
+内存消耗：22.5 MB, 在所有 Python3 提交中击败了25.41%的用户
+
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        if not root:
+            return -sys.maxsize
+        if not(root.left or root.right):
+            return root.val
+
+        self.m = -999
+        def dfs(r: TreeNode)->int:
+            if not r:   return 0
+            left = dfs(r.left)
+            right = dfs(r.right)
+            self.m = max(self.m, r.val, r.val + left, r.val + right, r.val + left + right)
+            return max(r.val, r.val + left, r.val + right)
+        dfs(root)
+        return self.m
+```
+
+### C
+
+```c
+int f(struct TreeNode* r, int* p){
+    if(r == NULL)   return 0;
+    int left = f(r->left, p);
+    int right = f(r->right, p);
+    int result = left>right? left>0? r->val + left: r->val : right>0? r->val + right: r->val;
+    *p = left>0 && right>0?left+right+r->val > *p? left+right+r->val: *p: result>*p? result: *p;
+
+    return result;
+}
+int maxPathSum(struct TreeNode* root){
+    if(root == NULL)    return NULL;
+    int *m = malloc(sizeof(int));
+    *m = -999;
+    f(root, m);
+    return *m;
+}
+```
+
